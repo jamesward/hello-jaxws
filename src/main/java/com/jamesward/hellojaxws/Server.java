@@ -1,34 +1,18 @@
 package com.jamesward.hellojaxws;
 
-import org.glassfish.grizzly.http.server.HttpHandler;
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.grizzly.http.server.NetworkListener;
-import org.glassfish.grizzly.jaxws.JaxwsHandler;
-
-import java.io.IOException;
+import javax.xml.ws.Endpoint;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class Server {
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws MalformedURLException {
+        final String proto = System.getenv("PROTO") != null ? System.getenv("PROTO") : "http";
+        final String host = System.getenv("HOST") != null ? System.getenv("HOST") : "localhost";
         final int port = System.getenv("PORT") != null ? Integer.valueOf(System.getenv("PORT")) : 8080;
+        final URL helloURL = new URL(proto, host, port, "/hello");
 
-        final HttpServer httpServer = new HttpServer();
-        final NetworkListener networkListener = new NetworkListener("jaxws-listener", "0.0.0.0", port);
-
-        final HttpHandler httpHandler = new JaxwsHandler(new HelloWorldService());
-        httpServer.getServerConfiguration().addHttpHandler(httpHandler, "/hello");
-        httpServer.addListener(networkListener);
-
-        httpServer.start();
-
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                httpServer.shutdownNow();
-            }
-        });
-
-        Thread.currentThread().join();
+        Endpoint.publish(helloURL.toString(), new HelloWorldService());
     }
 
 }
