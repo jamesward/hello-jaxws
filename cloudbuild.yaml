@@ -1,0 +1,18 @@
+steps:
+- name: 'heroku/buildpacks'
+  volumes:
+  - name: 'lifecycle'
+    path: '/lifecycle'
+  entrypoint: '/lifecycle/detector'
+  args: ['-app', '/workspace']
+- name: 'heroku/buildpacks'
+  entrypoint: '/lifecycle/builder'
+  args: ['-app', '/workspace']
+- name: 'gcr.io/cloud-builders/docker'
+  volumes:
+  - name: 'lifecycle'
+    path: '/lifecycle'
+  entrypoint: '/lifecycle/exporter'
+  args: ['-image', 'heroku/pack:18', '-layers', '/workspace', '-group', '/workspace/group.toml', '-app', '/workspace', '-daemon', 'hello-jaxws']
+#  args: ['run', '--volume', '/var/run/docker.sock:/var/run/docker.sock', 'heroku/pack:18', 'ls']
+#  args: ['run', '--volume', '/var/run/docker.sock:/var/run/docker.sock', 'heroku/pack:18', '/lifecycle/exporter', '-image', 'heroku/pack:18', '-layers', '/workspace', '-group', '/workspace/group.toml', '-app', '/workspace', '-daemon', 'hello-jaxws']
