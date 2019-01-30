@@ -13,11 +13,10 @@ steps:
   args: ['-app', '/workspace', '-layers', '/layers']
 - name: 'gcr.io/cloud-builders/docker'
   volumes:
-  - name: 'layers'
-    path: '/layers'
   - name: 'lifecycle'
     path: '/lifecycle'
+  - name: 'layers'
+    path: '/layers'
   entrypoint: '/lifecycle/exporter'
-  args: ['-image', 'heroku/buildpacks', '-layers', '/layers', '-group', '/workspace/group.toml', '-app', '/workspace', '-daemon', 'hello-jaxws']
-#  args: ['run', '--volume', '/var/run/docker.sock:/var/run/docker.sock', 'heroku/pack:18', 'ls']
-#  args: ['run', '--volume', '/var/run/docker.sock:/var/run/docker.sock', 'heroku/pack:18', '/lifecycle/exporter', '-image', 'heroku/pack:18', '-layers', '/workspace', '-group', '/workspace/group.toml', '-app', '/workspace', '-daemon', 'hello-jaxws']
+  args: ['-app', '/workspace', '-layers', '/layers', '-image', 'heroku/buildpacks', '-group', '/workspace/group.toml', '-daemon', 'gcr.io/$PROJECT_ID/hello-jaxws']
+images: ['gcr.io/$PROJECT_ID/hello-jaxws']
